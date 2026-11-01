@@ -1,7 +1,5 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/lib/router';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { useEvent } from '@/hooks/useEvent';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,35 +49,33 @@ export default function HomePage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Your Celebrations</h1>
           <p className="mt-1 text-muted-foreground">
-            Pick up where you left off or start planning a new celebration.
+            Continue planning your events or create a new celebration.
           </p>
         </div>
         <Button
           onClick={() => {
             setShowWizard(true);
           }}
-          className="self-start sm:self-auto"
+          className="gap-2"
         >
-          <PlusCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+          <PlusCircle className="h-4 w-4" aria-hidden="true" />
           Plan New Celebration
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {events.map((event) => (
-          <Card key={event.id} className="group relative transition-all hover:border-primary">
+          <Card
+            key={event.id}
+            className="group transition-all hover:border-primary/50 hover:shadow-md"
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-xl">
-                  <Link
-                    href={`/event/${event.id}`}
-                    className="rounded hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    {event.name}
-                  </Link>
-                </CardTitle>
-                <Badge variant="secondary">{EVENT_TYPE_LABELS[event.type]}</Badge>
+                <Badge variant="outline">{EVENT_TYPE_LABELS[event.type]}</Badge>
               </div>
+              <CardTitle className="line-clamp-1 text-lg group-hover:text-primary">
+                {event.name}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1 text-sm text-muted-foreground">

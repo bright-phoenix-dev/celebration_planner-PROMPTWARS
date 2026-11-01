@@ -4,7 +4,7 @@ import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 
 const pushMock = vi.fn();
 
-vi.mock('next/navigation', () => ({
+vi.mock('@/lib/router', () => ({
   useRouter: () => ({
     push: pushMock,
   }),

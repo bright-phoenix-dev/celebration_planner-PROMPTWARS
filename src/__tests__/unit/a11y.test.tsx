@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import axe from 'axe-core';
 import { BudgetTab } from '@/components/budget/BudgetTab';
@@ -55,47 +55,103 @@ describe('Accessibility (axe-core WCAG 2.1 AA audits)', () => {
     });
   });
 
-  it('EventTypeSelector has no axe violations', async () => {
-    const { container } = render(<EventTypeSelector onSelect={vi.fn()} />);
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
+  afterEach(() => {
+    document.documentElement.classList.remove('dark');
   });
 
-  it('EventDetailsForm has no axe violations', async () => {
-    const { container } = render(
-      <EventDetailsForm eventType="wedding" onSubmit={vi.fn()} onBack={vi.fn()} />,
-    );
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
+  describe('Light Mode (7 screens)', () => {
+    it('EventTypeSelector has no axe violations', async () => {
+      const { container } = render(<EventTypeSelector onSelect={vi.fn()} />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('EventDetailsForm has no axe violations', async () => {
+      const { container } = render(
+        <EventDetailsForm eventType="wedding" onSubmit={vi.fn()} onBack={vi.fn()} />,
+      );
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('OverviewTab has no axe violations', async () => {
+      const { container } = render(<OverviewTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('BudgetTab has no axe violations', async () => {
+      const { container } = render(<BudgetTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('TimelineTab has no axe violations', async () => {
+      const { container } = render(<TimelineTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('VendorsTab has no axe violations', async () => {
+      const { container } = render(<VendorsTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('IdeasTab has no axe violations', async () => {
+      const { container } = render(<IdeasTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
   });
 
-  it('OverviewTab has no axe violations', async () => {
-    const { container } = render(<OverviewTab />);
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
-  });
+  describe('Dark Mode (7 screens)', () => {
+    beforeEach(() => {
+      document.documentElement.classList.add('dark');
+    });
 
-  it('BudgetTab has no axe violations', async () => {
-    const { container } = render(<BudgetTab />);
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
-  });
+    it('EventTypeSelector has no axe violations in dark mode', async () => {
+      const { container } = render(<EventTypeSelector onSelect={vi.fn()} />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
 
-  it('TimelineTab has no axe violations', async () => {
-    const { container } = render(<TimelineTab />);
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
-  });
+    it('EventDetailsForm has no axe violations in dark mode', async () => {
+      const { container } = render(
+        <EventDetailsForm eventType="wedding" onSubmit={vi.fn()} onBack={vi.fn()} />,
+      );
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
 
-  it('VendorsTab has no axe violations', async () => {
-    const { container } = render(<VendorsTab />);
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
-  });
+    it('OverviewTab has no axe violations in dark mode', async () => {
+      const { container } = render(<OverviewTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
 
-  it('IdeasTab has no axe violations', async () => {
-    const { container } = render(<IdeasTab />);
-    const results = await axe.run(container);
-    expect(results.violations).toEqual([]);
+    it('BudgetTab has no axe violations in dark mode', async () => {
+      const { container } = render(<BudgetTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('TimelineTab has no axe violations in dark mode', async () => {
+      const { container } = render(<TimelineTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('VendorsTab has no axe violations in dark mode', async () => {
+      const { container } = render(<VendorsTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('IdeasTab has no axe violations in dark mode', async () => {
+      const { container } = render(<IdeasTab />);
+      const results = await axe.run(container);
+      expect(results.violations).toEqual([]);
+    });
   });
 });

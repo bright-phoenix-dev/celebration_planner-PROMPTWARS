@@ -1,15 +1,17 @@
-'use client';
-
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/lib/router';
 import { useEvent } from '@/hooks/useEvent';
 import { DashboardTabs } from '@/components/dashboard/DashboardTabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
-interface EventPageProps {
+/**
+ * Route parameters for EventDetailsPage.
+ */
+export interface EventDetailsPageProps {
   params: {
+    /** Unique UUID identifier of the celebration. */
     id: string;
   };
 }
@@ -17,8 +19,11 @@ interface EventPageProps {
 /**
  * Event planning dashboard page for a specific celebration.
  * Loads event state from IndexedDB based on UUID in the route parameter.
+ *
+ * @param props - Component props containing the event UUID route parameter.
+ * @returns Dashboard interface or not-found / loading placeholder.
  */
-export default function EventPage({ params }: EventPageProps) {
+export default function EventDetailsPage({ params }: EventDetailsPageProps) {
   const { currentEvent, isLoading, loadEvent } = useEvent();
 
   useEffect(() => {

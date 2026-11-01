@@ -20,7 +20,7 @@ flowchart TD
     end
 
     subgraph GoogleCloud["Google Cloud"]
-        Gemini["Google Gemini 2.0 API"]
+        Gemini["Google Gemini API (gemini-3.8-flash)"]
     end
 
     SPA -- "Static Assets (CSS, JS)" --> CDN

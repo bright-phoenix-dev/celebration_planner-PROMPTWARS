@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import HomePage from '@/app/page';
-import EventPage from '@/app/event/[id]/page';
-import '@/app/globals.css';
+import HomePage from '@/pages/HomePage';
+import EventDetailsPage from '@/pages/EventDetailsPage';
+import '@/styles/globals.css';
 
 /**
  * Main application shell with client-side path routing.
+ *
+ * Listens to HTML5 history popstate events and renders
+ * the corresponding SPA page component.
  */
 export function App() {
   const [currentPath, setCurrentPath] = useState(
@@ -31,7 +34,7 @@ export function App() {
     <div className="flex min-h-screen flex-col font-sans">
       <Header />
       <main id="main-content" className="flex-1">
-        {eventMatch?.[1] ? <EventPage params={{ id: eventMatch[1] }} /> : <HomePage />}
+        {eventMatch?.[1] ? <EventDetailsPage params={{ id: eventMatch[1] }} /> : <HomePage />}
       </main>
       <Footer />
     </div>

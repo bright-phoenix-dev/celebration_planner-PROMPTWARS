@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,21 @@ export function IdeasTab() {
   const [dietaryNeeds, setDietaryNeeds] = useState('');
   const [venueType, setVenueType] = useState('');
   const [vibe, setVibe] = useState('');
+
+  const errorRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.focus();
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (ideas && !isLoading && resultsRef.current) {
+      resultsRef.current.focus();
+    }
+  }, [ideas, isLoading]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,7 +175,13 @@ export function IdeasTab() {
 
       {/* Error */}
       {error && (
-        <Card className="border-destructive/50" role="alert">
+        <Card
+          ref={errorRef}
+          tabIndex={-1}
+          className="border-destructive/50 outline-none"
+          role="alert"
+          aria-live="assertive"
+        >
           <CardContent className="p-4 text-destructive">
             <p className="font-medium">Failed to generate ideas</p>
             <p className="text-sm">{error}</p>
@@ -170,7 +191,7 @@ export function IdeasTab() {
 
       {/* Results */}
       {ideas && !isLoading && (
-        <div className="space-y-4" aria-live="polite">
+        <div ref={resultsRef} tabIndex={-1} className="space-y-4 outline-none" aria-live="polite">
           {/* Themes */}
           {ideas.themes.length > 0 && (
             <Card>

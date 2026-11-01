@@ -7,15 +7,24 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: ['@typescript-eslint', 'jsx-a11y'],
+  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y'],
   extends: [
-    'next/core-web-vitals',
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
     'plugin:@typescript-eslint/strict-type-checked',
     'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:jsx-a11y/strict',
     'prettier',
   ],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
   rules: {
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/consistent-type-imports': 'error',

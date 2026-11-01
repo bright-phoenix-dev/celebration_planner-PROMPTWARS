@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
-import { Link, useRouter, usePathname } from '@/lib/next-shim';
+import { Link, useRouter, usePathname } from '@/lib/router';
 
-describe('next-shim (Universal Link & Router Compatibility)', () => {
+describe('SPA Router (Link, useRouter, usePathname)', () => {
   it('renders anchor element and intercepts internal navigation', () => {
     const pushStateSpy = vi.spyOn(window.history, 'pushState');
     const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
@@ -23,6 +23,16 @@ describe('next-shim (Universal Link & Router Compatibility)', () => {
 
     render(<Link href="https://example.com">External Site</Link>);
     const anchor = screen.getByText('External Site');
+
+    fireEvent.click(anchor);
+    expect(pushStateSpy).not.toHaveBeenCalled();
+  });
+
+  it('allows mailto and tel links to navigate without preventDefault', () => {
+    const pushStateSpy = vi.spyOn(window.history, 'pushState');
+
+    render(<Link href="mailto:test@example.com">Email Us</Link>);
+    const anchor = screen.getByText('Email Us');
 
     fireEvent.click(anchor);
     expect(pushStateSpy).not.toHaveBeenCalled();

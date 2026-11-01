@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import handler from '../../../api/ideas';
 import * as aiService from '@/services/ai';
+import { resetRateLimits } from '@/lib/serverless';
 import { EventEmitter } from 'events';
 
 class MockIncomingMessage extends EventEmitter {
@@ -35,7 +36,23 @@ describe('Serverless Handler (/api/ideas)', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    resetRateLimits();
     process.env = { ...originalEnv };
+  });
+
+  it('sets security headers on all responses', async () => {
+    const req = new MockIncomingMessage();
+    req.method = 'GET';
+    const res = new MockServerResponse();
+
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.headers['X-Content-Type-Options']).toBe('nosniff');
+    expect(res.headers['X-Frame-Options']).toBe('DENY');
+    expect(res.headers['Cache-Control']).toContain('no-store');
   });
 
   it('rejects non-POST methods with 405', async () => {
@@ -187,6 +204,31 @@ describe('Serverless Handler (/api/ideas)', () => {
     expect(JSON.parse(res.output)).toEqual({ error: 'AI response could not be processed' });
   });
 
+  it('returns 429 with Retry-After header when Google API returns 429 quota exhaustion', async () => {
+    process.env['GEMINI_API_KEY'] = 'test-key';
+    vi.spyOn(aiService, 'generateIdeas').mockRejectedValueOnce(
+      new Error('Resource has been exhausted (e.g. check quota) (429)'),
+    );
+
+    const req = new MockIncomingMessage({
+      preferences: {
+        eventType: 'wedding',
+      },
+    });
+    const res = new MockServerResponse();
+
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.statusCode).toBe(429);
+    expect(res.headers['Retry-After']).toBe('60');
+    expect(JSON.parse(res.output)).toEqual({
+      error: 'AI usage limit reached. Please try again later.',
+    });
+  });
+
   it('returns 200 with validated ideas on successful call', async () => {
     process.env['GEMINI_API_KEY'] = 'test-key';
     const mockIdeas = {
@@ -243,6 +285,51 @@ describe('Serverless Handler (/api/ideas)', () => {
     expect(JSON.parse(res.output)).toEqual(mockIdeas);
   });
 
+  it('handles req.body passed as a Buffer', async () => {
+    process.env['GEMINI_API_KEY'] = 'test-key';
+    const mockIdeas = {
+      themes: [{ name: 'Buffer Theme', description: 'Buffer Desc' }],
+      decor: ['Lights'],
+      menu: [{ item: 'Soup' }],
+      activities: ['Dancing'],
+      invitations: [{ style: 'Card', description: 'Handmade' }],
+    };
+    vi.spyOn(aiService, 'generateIdeas').mockResolvedValueOnce(mockIdeas);
+
+    const req = new MockIncomingMessage(
+      Buffer.from(
+        JSON.stringify({
+          preferences: {
+            eventType: 'community',
+          },
+        }),
+      ),
+    );
+    const res = new MockServerResponse();
+
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.output)).toEqual(mockIdeas);
+  });
+
+  it('handles empty body gracefully returning 400 validation error', async () => {
+    process.env['GEMINI_API_KEY'] = 'test-key';
+    const req = new MockIncomingMessage('');
+    const res = new MockServerResponse();
+
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.statusCode).toBe(400);
+    expect(res.output).toContain('Invalid request data');
+  });
+
   it('handles req.body passed as an invalid JSON string with 400', async () => {
     process.env['GEMINI_API_KEY'] = 'test-key';
     const req = new MockIncomingMessage('{ invalid-json');
@@ -257,8 +344,16 @@ describe('Serverless Handler (/api/ideas)', () => {
     expect(res.output).toContain('Invalid JSON payload');
   });
 
-  it('returns 429 when rate limit is exceeded', async () => {
+  it('returns 429 when client IP rate limit is exceeded', async () => {
     process.env['GEMINI_API_KEY'] = 'test-key';
+    const mockIdeas = {
+      themes: [],
+      decor: [],
+      menu: [],
+      activities: [],
+      invitations: [],
+    };
+    vi.spyOn(aiService, 'generateIdeas').mockResolvedValue(mockIdeas);
     const ip = '10.0.0.99';
 
     for (let i = 0; i < 11; i++) {
@@ -276,8 +371,49 @@ describe('Serverless Handler (/api/ideas)', () => {
 
       if (i === 10) {
         expect(res.statusCode).toBe(429);
-        expect(res.output).toContain('Too many requests');
+        expect(res.headers['Retry-After']).toBe('60');
+        expect(res.output).toContain('AI usage limit reached');
       }
     }
+  });
+
+  it('returns 429 when global rate limit is exceeded across multiple IPs', async () => {
+    process.env['GEMINI_API_KEY'] = 'test-key';
+    const mockIdeas = {
+      themes: [],
+      decor: [],
+      menu: [],
+      activities: [],
+      invitations: [],
+    };
+    vi.spyOn(aiService, 'generateIdeas').mockResolvedValue(mockIdeas);
+
+    // Send 30 requests from 30 distinct IPs
+    for (let i = 0; i < 30; i++) {
+      const req = new MockIncomingMessage(
+        { preferences: { eventType: 'wedding' } },
+        { 'x-forwarded-for': `172.16.0.${i}` },
+      );
+      const res = new MockServerResponse();
+      await handler(
+        req as unknown as IncomingMessage & { body?: unknown },
+        res as unknown as ServerResponse,
+      );
+    }
+
+    // 31st request from a new IP hits global instance cap
+    const req = new MockIncomingMessage(
+      { preferences: { eventType: 'wedding' } },
+      { 'x-forwarded-for': '172.16.0.254' },
+    );
+    const res = new MockServerResponse();
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.statusCode).toBe(429);
+    expect(res.headers['Retry-After']).toBe('60');
+    expect(res.output).toContain('AI usage limit reached');
   });
 });

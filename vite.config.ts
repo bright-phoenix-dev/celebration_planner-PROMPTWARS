@@ -31,8 +31,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        'next/link': path.resolve(__dirname, './src/lib/next-shim.tsx'),
-        'next/navigation': path.resolve(__dirname, './src/lib/next-shim.tsx'),
       },
     },
     server: {

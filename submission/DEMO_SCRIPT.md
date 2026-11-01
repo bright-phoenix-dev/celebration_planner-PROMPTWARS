@@ -48,7 +48,7 @@ A guided presentation script for judges and evaluators, aligned with the capture
 
 - **Visual**: Clicking the **AI Ideas** tab. Submitting preferences: Vibe _"Cozy Autumn & Romantic"_, Theme _"Rustic Vintage Barn"_, Dietary _"Gluten-Free & Vegan Options"_. Displaying structured cards for Themes, Decor, Curated Menu, Activities, and Invitations.
 - **Narrator**:
-  > _"When creative inspiration stalls, our GenAI engine steps in. Powered by Google Gemini 2.0 with strict JSON schema constraints and XML prompt delimitation, it returns hyper-tailored concepts for themes, decor, curated dietary-safe menus, activities, and invitations. Responses are cached in an LRU store and debounced, eliminating redundant API spend."_
+  > _"When creative inspiration stalls, our GenAI engine steps in. Powered by Google Gemini with strict JSON schema constraints and XML prompt delimitation, it returns hyper-tailored concepts for themes, decor, curated dietary-safe menus, activities, and invitations. Responses are schema-validated through Zod and safely rendered, eliminating raw model execution risks."_
 
 ---
 
