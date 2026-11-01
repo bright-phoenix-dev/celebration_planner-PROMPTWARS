@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EventTypeSchema } from './event';
+import { EventTypeSchema } from './event.js';
 
 /**
  * Schema for AI idea generation preferences submitted by the user.

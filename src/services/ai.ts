@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/generative-ai';
-import { AIIdeasResponseSchema } from '../schemas/ai';
-import { getGeminiModel } from '../lib/constants';
+import { AIIdeasResponseSchema } from '../schemas/ai.js';
+import { getGeminiModel } from '../lib/constants.js';
 import type { AIPreferences, AIIdeasResponse } from '../types';
 
 /**

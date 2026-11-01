@@ -101,6 +101,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
+    if (
+      msg.includes('503') ||
+      msg.toLowerCase().includes('high demand') ||
+      msg.toLowerCase().includes('temporarily unavailable')
+    ) {
+      return NextResponse.json(
+        { error: 'AI service is experiencing high demand. Please try again shortly.' },
+        { status: 503 },
+      );
+    }
+
     const isConfigError = error instanceof Error && error.message.includes('GEMINI_API_KEY');
     return NextResponse.json(
       {

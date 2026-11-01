@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { AIRequestSchema } from '../src/schemas/ai';
-import { generateIdeas, AIParseError } from '../src/services/ai';
-import { DEFAULT_GEMINI_MODEL, getGeminiModel } from '../src/lib/constants';
+import { AIRequestSchema } from '../src/schemas/ai.js';
+import { generateIdeas, AIParseError } from '../src/services/ai.js';
+import { DEFAULT_GEMINI_MODEL, getGeminiModel } from '../src/lib/constants.js';
 
 export { DEFAULT_GEMINI_MODEL, getGeminiModel };
 
@@ -58,25 +58,27 @@ export default async function handler(
     return;
   }
 
-  // Parse Body
-  let rawBody = '';
+  // Parse Body (handles parsed object from Vercel, JSON string, Buffer, or incoming stream)
+  let parsedJson: unknown;
   try {
-    if (req.body && typeof req.body === 'object') {
-      rawBody = JSON.stringify(req.body);
+    if (req.body !== undefined && req.body !== null) {
+      if (typeof req.body === 'string') {
+        parsedJson = req.body.trim() ? JSON.parse(req.body) : {};
+      } else if (Buffer.isBuffer(req.body)) {
+        const str = req.body.toString('utf-8').trim();
+        parsedJson = str ? JSON.parse(str) : {};
+      } else if (typeof req.body === 'object') {
+        parsedJson = req.body;
+      } else {
+        parsedJson = {};
+      }
     } else {
+      let rawBody = '';
       for await (const chunk of req) {
         rawBody += typeof chunk === 'string' ? chunk : String(chunk);
       }
+      parsedJson = rawBody.trim() ? JSON.parse(rawBody) : {};
     }
-  } catch {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: 'Invalid request body' }));
-    return;
-  }
-
-  let parsedJson: unknown;
-  try {
-    parsedJson = JSON.parse(rawBody || '{}');
   } catch {
     res.statusCode = 400;
     res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
@@ -135,6 +137,19 @@ export default async function handler(
     if (msg.includes('API key') || msg.includes('401') || msg.includes('403')) {
       res.statusCode = 401;
       res.end(JSON.stringify({ error: 'Invalid or unauthorized Gemini API key' }));
+      return;
+    }
+    if (
+      msg.includes('503') ||
+      msg.toLowerCase().includes('high demand') ||
+      msg.toLowerCase().includes('temporarily unavailable')
+    ) {
+      res.statusCode = 503;
+      res.end(
+        JSON.stringify({
+          error: 'AI service is experiencing high demand. Please try again shortly.',
+        }),
+      );
       return;
     }
     if (msg.includes('GEMINI_API_KEY is not configured')) {

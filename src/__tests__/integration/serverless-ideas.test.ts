@@ -214,6 +214,49 @@ describe('Serverless Handler (/api/ideas)', () => {
     expect(JSON.parse(res.output)).toEqual(mockIdeas);
   });
 
+  it('handles req.body passed as a JSON string', async () => {
+    process.env['GEMINI_API_KEY'] = 'test-key';
+    const mockIdeas = {
+      themes: [{ name: 'String Theme', description: 'String Desc' }],
+      decor: ['Flowers'],
+      menu: [{ item: 'Salad' }],
+      activities: ['Music'],
+      invitations: [{ style: 'Print', description: 'Paper card' }],
+    };
+    vi.spyOn(aiService, 'generateIdeas').mockResolvedValueOnce(mockIdeas);
+
+    const req = new MockIncomingMessage(
+      JSON.stringify({
+        preferences: {
+          eventType: 'wedding',
+        },
+      }),
+    );
+    const res = new MockServerResponse();
+
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.output)).toEqual(mockIdeas);
+  });
+
+  it('handles req.body passed as an invalid JSON string with 400', async () => {
+    process.env['GEMINI_API_KEY'] = 'test-key';
+    const req = new MockIncomingMessage('{ invalid-json');
+    const res = new MockServerResponse();
+
+    await handler(
+      req as unknown as IncomingMessage & { body?: unknown },
+      res as unknown as ServerResponse,
+    );
+
+    expect(res.statusCode).toBe(400);
+    expect(res.output).toContain('Invalid JSON payload');
+  });
+
   it('returns 429 when rate limit is exceeded', async () => {
     process.env['GEMINI_API_KEY'] = 'test-key';
     const ip = '10.0.0.99';
