@@ -253,7 +253,7 @@ export const formatDate = (isoDate: string): string => {
 /**
  * Default Gemini model used for AI idea generation.
  */
-export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.1-flash-lite';
 
 /**
  * Returns the configured Gemini model name from environment or fallback default.

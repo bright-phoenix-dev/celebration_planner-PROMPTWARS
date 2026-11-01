@@ -20,7 +20,7 @@ flowchart TD
     end
 
     subgraph GoogleCloud["Google Cloud"]
-        Gemini["Google Gemini API (gemini-3.8-flash)"]
+        Gemini["Google Gemini API (gemini-3.1-flash-lite)"]
     end
 
     SPA -- "Static Assets (CSS, JS)" --> CDN
@@ -48,7 +48,7 @@ flowchart TD
    - **Output Directory**: `dist`
 5. Under **"Environment Variables"**, add:
    - `GEMINI_API_KEY`: Your Google Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
-   - `GEMINI_MODEL`: `gemini-3.8-flash` (Optional; defaults to `gemini-3.8-flash`).
+   - `GEMINI_MODEL`: `gemini-3.1-flash-lite` (Optional; defaults to `gemini-3.1-flash-lite`).
    - `RATE_LIMIT_MAX`: `10` (Optional; defaults to 10 requests per minute).
    > **Note**: Do **NOT** prefix this variable with `NEXT_PUBLIC_` or `VITE_`. Leaving it un-prefixed guarantees it will never be bundled into client-facing JavaScript.
 6. Click **Deploy**. Vercel will build the frontend into `dist/` and automatically bind `api/ideas.ts` as a serverless function according to `vercel.json`.
@@ -97,7 +97,7 @@ Netlify supports static assets with serverless functions natively.
    - **Functions directory**: `api`
 4. Go to **Site configuration > Environment variables**, click **"Add a variable"**:
    - Key: `GEMINI_API_KEY`, Value: `your_gemini_api_key_here`
-   - Key: `GEMINI_MODEL`, Value: `gemini-3.8-flash` (Optional; defaults to `gemini-3.8-flash`)
+   - Key: `GEMINI_MODEL`, Value: `gemini-3.1-flash-lite` (Optional; defaults to `gemini-3.1-flash-lite`)
    - Scopes: **Functions / Builds** only (do not enable "Runtime (Browser)").
 5. Click **Deploy Site**.
 

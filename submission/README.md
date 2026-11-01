@@ -9,7 +9,7 @@
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1%20AA%20Compliant-blue)](https://www.w3.org/WAI/WCAG21/AA/)
 
 - **Live URL**: [https://celebration-planner-promptwars.vercel.app](https://celebration-planner-promptwars.vercel.app)
-- **Repository**: [https://github.com/bright-phoenix-dev/celebration-planner](https://github.com/bright-phoenix-dev/celebration-planner)
+- **Repository**: [https://github.com/bright-phoenix-dev/celebration_planner-PROMPTWARS](https://github.com/bright-phoenix-dev/celebration_planner-PROMPTWARS)
 
 ---
 
@@ -26,7 +26,7 @@ From an initial guest count and target budget, the application:
 1. Calculates adaptive category-wise budget allocations with planned vs. actual spend tracking and WCAG-compliant overage warnings.
 2. Auto-generates a backward-planned milestone timeline from the event date down to the day-of.
 3. Builds an event-tailored vendor checklist tracking 5 status stages, quotes, and notes.
-4. Generates hyper-personalized, culturally aware ideas across themes, decor, curated menus, activities, and invitations using Google Gemini (`gemini-3.8-flash`).
+4. Generates hyper-personalized, culturally aware ideas across themes, decor, curated menus, activities, and invitations using Google Gemini (`gemini-3.1-flash-lite`).
 
 ---
 
@@ -35,7 +35,7 @@ From an initial guest count and target budget, the application:
 - **Adaptive Budget Allocator**: Dynamic percentage splits based on event typology (e.g. Wedding attire & photography vs. Community permits & logistics). Tracks planned vs. actual spend with warning badges and icons.
 - **Backward-Planned Milestone Timeline**: Calculates exact due dates relative to event day across 6 milestone phases (12 Months, 6 Months, 3 Months, 1 Month, 1 Week, Day-Of). Tasks are fully editable with completion toggles and progress bars.
 - **Categorized Vendor Checklist**: Pre-seeded per event type with status progression (`to-contact` &rarr; `contacted` &rarr; `quoted` &rarr; `booked` &rarr; `paid`), quotes, and contact notes.
-- **GenAI Ideas Generator**: Powered by Gemini (`gemini-3.8-flash`) with XML prompt delimitation and strict JSON schemas, returning structured themes, decor, menus, activities, and invitations based on user vibe, culture, and dietary needs.
+- **GenAI Ideas Generator**: Powered by Gemini (`gemini-3.1-flash-lite`) with XML prompt delimitation and strict JSON schemas, returning structured themes, decor, menus, activities, and invitations based on user vibe, culture, and dietary needs.
 - **Zero-Leak Local Persistence**: Complete offline-first storage in IndexedDB via Dexie.js. No tracking, no user data leakage, instant page reload recovery.
 - **Print & PDF Export**: Dedicated clean print styles and formatted plain-text export for sharing with co-hosts and physical binders.
 - **WCAG 2.1 AA Certified**: Automated axe-core audits verify 0 accessibility violations across every screen in **both Light and Dark modes**, featuring high-contrast themes, visible focus indicators, and screen reader announcements (`aria-live="polite"` for loading/results, `aria-live="assertive"` for alerts).
@@ -44,16 +44,16 @@ From an initial guest count and target budget, the application:
 
 ## Tech Stack
 
-| Layer                   | Technology                                                                  |
-| :---------------------- | :-------------------------------------------------------------------------- |
-| **Framework**           | Vite + React 18 SPA with lightweight HTML5 routing                          |
-| **Language**            | TypeScript in Strict Mode (zero `any`, full type safety)                    |
-| **Styling**             | Tailwind CSS + Radix UI primitives + Lucide Icons                           |
-| **State & Persistence** | Zustand + Dexie.js (IndexedDB)                                              |
-| **Validation**          | Shared Zod schemas (client and serverless API)                              |
-| **AI Layer**            | Google Gemini (`gemini-3.8-flash`) via serverless function (`api/ideas.ts`) |
-| **Rate Limiting**       | Dual sliding-window limiter (10 req/min/IP + 30 req/min/instance global)    |
-| **Testing**             | Vitest + React Testing Library + Axe-Core + Playwright                      |
+| Layer                   | Technology                                                                       |
+| :---------------------- | :------------------------------------------------------------------------------- |
+| **Framework**           | Vite + React 18 SPA with lightweight HTML5 routing                               |
+| **Language**            | TypeScript in Strict Mode (zero `any`, full type safety)                         |
+| **Styling**             | Tailwind CSS + Radix UI primitives + Lucide Icons                                |
+| **State & Persistence** | Zustand + Dexie.js (IndexedDB)                                                   |
+| **Validation**          | Shared Zod schemas (client and serverless API)                                   |
+| **AI Layer**            | Google Gemini (`gemini-3.1-flash-lite`) via serverless function (`api/ideas.ts`) |
+| **Rate Limiting**       | Dual sliding-window limiter (10 req/min/IP + 30 req/min/instance global)         |
+| **Testing**             | Vitest + React Testing Library + Axe-Core + Playwright                           |
 
 ---
 
@@ -80,7 +80,7 @@ flowchart TD
     end
 
     subgraph Cloud["External Cloud Services"]
-        Gemini["Google Gemini API (gemini-3.8-flash)"]
+        Gemini["Google Gemini API (gemini-3.1-flash-lite)"]
     end
 
     UI --> Router

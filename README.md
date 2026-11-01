@@ -3,7 +3,7 @@
 A full-stack, GenAI-powered celebration and event planning application that helps users organize **weddings**, **birthdays**, and **community events** with adaptive budgets, backward-planned timelines, vendor checklists, and personalized AI ideas.
 
 - **Live Deployment**: [https://celebration-planner-promptwars.vercel.app](https://celebration-planner-promptwars.vercel.app)
-- **Repository**: [https://github.com/bright-phoenix-dev/celebration-planner](https://github.com/bright-phoenix-dev/celebration-planner)
+- **Repository**: [https://github.com/bright-phoenix-dev/celebration_planner-PROMPTWARS](https://github.com/bright-phoenix-dev/celebration_planner-PROMPTWARS)
 
 ---
 
@@ -29,7 +29,7 @@ flowchart TD
     end
 
     subgraph External["External Cloud"]
-        Gemini["Google Gemini API (gemini-3.8-flash)"]
+        Gemini["Google Gemini API (gemini-3.1-flash-lite)"]
     end
 
     UI --> Router
@@ -50,7 +50,7 @@ flowchart TD
 - **Styling**: Tailwind CSS + accessible Radix UI primitives with full dark mode and reduced-motion support.
 - **Client Persistence**: 100% offline-first local retention using IndexedDB via Dexie.js (`src/store/persistence.ts`). Data persists seamlessly across page refreshes, tab closures, and multiple events.
 - **Serverless AI Gateway**: Single authoritative serverless endpoint (`api/ideas.ts`), exposed via `/api/ai/ideas`, holding `GEMINI_API_KEY` exclusively on the server.
-- **AI Model**: Google Gemini (`gemini-3.8-flash` by default, configurable via `GEMINI_MODEL`).
+- **AI Model**: Google Gemini (`gemini-3.1-flash-lite` by default, configurable via `GEMINI_MODEL`).
 - **Security & Rate Limiting**: Dual sliding-window rate limiting (10 req/min per IP and 30 req/min global instance cap), response security headers (`X-Content-Type-Options: nosniff`, `Cache-Control: no-store`), and strict site CSP headers in `vercel.json`.
 - **Error Handling**: Graceful translation of Google API errors (429 rate limit with `Retry-After: 60`, 404 model unavailable, 401 invalid key, 502 parse error, 503 high demand) with automatic API key redaction in server logs.
 
@@ -79,12 +79,12 @@ Copy `.env.example` to `.env`:
 cp .env.example .env
 ```
 
-| Variable                | Required           | Default            | Description                                                                        |
-| :---------------------- | :----------------- | :----------------- | :--------------------------------------------------------------------------------- |
-| `GEMINI_API_KEY`        | Yes (for AI Ideas) | None               | Google Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey). |
-| `GEMINI_MODEL`          | No                 | `gemini-3.8-flash` | Gemini model name for generation (defaults to `gemini-3.8-flash`).                 |
-| `RATE_LIMIT_MAX`        | No                 | `10`               | Maximum requests per minute per IP on `/api/ai/ideas`.                             |
-| `RATE_LIMIT_GLOBAL_MAX` | No                 | `30`               | Maximum requests per minute per serverless execution instance.                     |
+| Variable                | Required           | Default                 | Description                                                                        |
+| :---------------------- | :----------------- | :---------------------- | :--------------------------------------------------------------------------------- |
+| `GEMINI_API_KEY`        | Yes (for AI Ideas) | None                    | Google Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey). |
+| `GEMINI_MODEL`          | No                 | `gemini-3.1-flash-lite` | Gemini model name for generation (defaults to `gemini-3.1-flash-lite`).            |
+| `RATE_LIMIT_MAX`        | No                 | `10`                    | Maximum requests per minute per IP on `/api/ai/ideas`.                             |
+| `RATE_LIMIT_GLOBAL_MAX` | No                 | `30`                    | Maximum requests per minute per serverless execution instance.                     |
 
 ---
 

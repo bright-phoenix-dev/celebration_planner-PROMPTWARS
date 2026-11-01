@@ -58,7 +58,7 @@ describe('AI Service (src/services/ai.ts)', () => {
     );
   });
 
-  it('calls Gemini model with default gemini-3.8-flash, responseSchema, and returns validated ideas', async () => {
+  it('calls Gemini model with default gemini-3.1-flash-lite, responseSchema, and returns validated ideas', async () => {
     mockGenerateContent.mockResolvedValueOnce({
       response: {
         text: () => JSON.stringify(sampleIdeas),
@@ -71,7 +71,7 @@ describe('AI Service (src/services/ai.ts)', () => {
     expect(result.decor.length).toBe(2);
     expect(mockGenerateContent).toHaveBeenCalledTimes(1);
 
-    // Verify model requested is DEFAULT_GEMINI_MODEL ('gemini-3.8-flash')
+    // Verify model requested is DEFAULT_GEMINI_MODEL ('gemini-3.1-flash-lite')
     const modelCallArgs = mockGetGenerativeModel.mock.calls[0]?.[0] as {
       model: string;
       generationConfig: { responseMimeType: string; maxOutputTokens: number };
@@ -79,7 +79,7 @@ describe('AI Service (src/services/ai.ts)', () => {
     expect(modelCallArgs.model).toBe(DEFAULT_GEMINI_MODEL);
     expect(modelCallArgs.generationConfig.responseMimeType).toBe('application/json');
     expect(modelCallArgs.generationConfig.maxOutputTokens).toBe(8192);
-    expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
+    expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.1-flash-lite');
 
     // Calling again with the same preferences uses the LRU cache
     const cachedResult = await generateIdeas(validPrefs);
