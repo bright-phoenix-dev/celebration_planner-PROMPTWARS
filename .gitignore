@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# build output
+dist/
+dist-ssr/
+.next/
+out/
+.vercel/
+.netlify/
+
+# testing
+coverage/
+test-results/
+playwright-report/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# misc
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+Thumbs.db
+*.webm
+

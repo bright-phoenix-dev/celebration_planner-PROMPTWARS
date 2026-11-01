@@ -1,0 +1,9 @@
+.next
+dist
+node_modules
+coverage
+test-results
+playwright-report
+pnpm-lock.yaml
+package-lock.json
+*.webm
